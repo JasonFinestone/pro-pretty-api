@@ -1,9 +1,19 @@
 from flask import Flask
 from flask_restful import Api
+from flask.ext.login import LoginManager, login_required
+from werkzeug.security import gen_salt
+from flask_oauthlib.provider import OAuth2Provider
+
+from flask.ext.login import current_user, UserMixin
 
 app = Flask(__name__)
+oauth = OAuth2Provider(app)
+login_manager = LoginManager(app)
+login_manager.login_view = "login"
+login_manager.session_protection = "strong"
+
 # restful api
-api = Api(app)
+api = Api(app, decorators=[oauth.require_oauth('email'), login_required()])
 
 from resources import auth_resource
 
